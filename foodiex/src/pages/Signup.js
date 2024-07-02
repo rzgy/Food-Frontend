@@ -5,31 +5,15 @@ import { register } from "../api/auth";
 import { useMutation } from "@tanstack/react-query";
 
 const Signup = () => {
-  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const [userInfo, setUserInfo] = useState({});
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-    setPasswordError("");
-  };
-
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
     setPasswordError("");
   };
-
-  useEffect(() => {
-    if (password && confirmPassword) {
-      if (password !== confirmPassword) {
-        setPasswordError("Passwords do not match!");
-      } else {
-        setPasswordError("");
-      }
-    }
-  }, [password, confirmPassword]);
 
   //registration below
 
@@ -45,13 +29,14 @@ const Signup = () => {
     mutationKey: ["register"],
     mutationFn: () => register(userInfo),
     onSuccess: () => {
-      setUserInfo(true);
+      //   setUserInfo(true);
+      userInfo(true);
     },
   });
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (userInfo.password !== confirmPassword) {
       setPasswordError("Passwords do not match!");
       return;
     }
@@ -120,8 +105,8 @@ const Signup = () => {
                     name="password"
                     type="password"
                     autoComplete="new-password"
-                    value={password}
-                    onChange={handlePasswordChange}
+                    value={userInfo.password}
+                    onChange={handleChange}
                     required
                     className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
