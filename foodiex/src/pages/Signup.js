@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ReactComponent as Svg1 } from "../assets/1.svg";
+import userContext from "../context/userContext";
+import { register } from "../api/auth";
+import { useMutation } from "@tanstack/react-query";
+
 const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  const [userInfo, setUserInfo] = useState({});
+
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    setPasswordError(""); // Clear error when typing in password
+    setPasswordError("");
   };
 
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
-    setPasswordError(""); // Clear error when typing in confirm password
+    setPasswordError("");
   };
 
   useEffect(() => {
@@ -25,14 +31,31 @@ const Signup = () => {
     }
   }, [password, confirmPassword]);
 
-  const handleSubmit = (e) => {
+  //registration below
+
+  const handleChange = (e) => {
+    if (e.target.name === "image") {
+      setUserInfo({ ...userInfo, [e.target.name]: e.target.files[0] });
+    } else {
+      setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
+    }
+  };
+
+  const { mutate } = useMutation({
+    mutationKey: ["register"],
+    mutationFn: () => register(userInfo),
+    onSuccess: () => {
+      setUserInfo(true);
+    },
+  });
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setPasswordError("Passwords do not match!");
-    } else {
-      // Passwords match, you can handle the form submission here
-      console.log("Form submitted");
+      return;
     }
+    mutate();
   };
 
   return (
@@ -50,7 +73,7 @@ const Signup = () => {
             }}
           />
         </div>
-        {/* login card bellow */}
+        {/* SignUp card bellow */}
 
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -63,10 +86,10 @@ const Signup = () => {
           </div>
 
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-6" onSubmit={handleFormSubmit}>
               <div>
                 <label
-                  htmlFor="Username"
+                  htmlFor="username"
                   className="block text-sm font-medium leading-6 text-white"
                 >
                   Username
@@ -75,7 +98,8 @@ const Signup = () => {
                   <input
                     id="username"
                     name="username"
-                    type="username"
+                    onChange={handleChange}
+                    type="text"
                     autoComplete="username"
                     required
                     className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -111,7 +135,7 @@ const Signup = () => {
                 >
                   Confirm Password
                 </label>
-                <div className="mt-2 ">
+                <div className="mt-2">
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -122,40 +146,41 @@ const Signup = () => {
                     required
                     className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
-                  <div className="py-2">
-                    <label
-                      htmlFor="image"
-                      className="block text-white text-sm font-medium mb-2"
-                    >
-                      Profile Image
-                    </label>
-                    <input
-                      type="file"
-                      id="image"
-                      name="image"
-                      className="w-full px-4 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                      required
-                    />
-                  </div>
                 </div>
               </div>
 
               {passwordError && (
                 <div className="text-red-600 text-center">{passwordError}</div>
               )}
-
+              <div className="mb-6">
+                <label
+                  htmlFor="image"
+                  className="block text-white text-sm font-medium mb-2"
+                >
+                  Profile Image
+                </label>
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  onChange={handleChange}
+                  className="block w-full rounded-md border-0 py-1.5 px-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  required
+                />
+              </div>
               <div>
                 <button
                   type="submit"
+                  onClick={handleFormSubmit}
                   className="flex w-full justify-center rounded-md bg-orange-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Signup
                 </button>
               </div>
             </form>
-
+            {/* Signup card end */}
             <p className="mt-10 text-center text-sm text-gray-500">
-              You're already a member?{" "}
+              You're already a member?
               <a
                 href="/login"
                 className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
@@ -165,7 +190,6 @@ const Signup = () => {
             </p>
           </div>
         </div>
-        {/* Signup card end */}
       </div>
     </div>
   );
