@@ -9,7 +9,7 @@ const checkToken = () => {
 };
 
 const login = async (userInfo) => {
-  const { data } = await instance.post("/signin", userInfo);
+  const { data } = await instance.post("/users/signin", userInfo);
   storeToken(data.token);
   return data;
 };
@@ -18,7 +18,7 @@ const register = async (userInfo) => {
   const formData = new FormData();
   for (const key in userInfo) formData.append(key, userInfo[key]);
 
-  const { data } = await instance.post("/signup", formData);
+  const { data } = await instance.post("/users/signup", formData);
   return data;
 };
 
