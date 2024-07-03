@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { ReactComponent as Svg1 } from "../assets/1.svg";
 import { login } from "../api/auth";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [userInfo, setUserInfo] = useState({});
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
@@ -14,6 +16,7 @@ const Login = () => {
     mutationFn: () => login(userInfo),
     onSuccess: () => {
       setUserInfo(true);
+      navigate("/home");
     },
   });
 

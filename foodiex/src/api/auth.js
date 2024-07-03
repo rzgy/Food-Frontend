@@ -23,8 +23,31 @@ const register = async (userInfo) => {
   return data;
 };
 
+const myProfile = async () => {
+  const token = localStorage.getItem("token");
+  const { data } = await instance.get("/users/myprofile", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return data;
+};
+
+const upDateProfile = async (userInfo) => {
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  // for (const key in userInfo) formData.append(key, userInfo[key]);
+  formData.append("image", userInfo);
+  const { data } = await instance.put("/users/myprofile", formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return data;
+};
+
 const storeToken = (token) => {
   localStorage.setItem("token", token);
 };
 
-export { checkToken, register, login, storeToken };
+export { checkToken, register, login, myProfile, upDateProfile, storeToken };

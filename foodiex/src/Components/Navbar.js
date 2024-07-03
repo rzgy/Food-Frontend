@@ -9,12 +9,14 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import { ReactComponent as Svg2 } from "../assets/2.svg";
+import { useQuery } from "@tanstack/react-query";
+import { myProfile } from "../api/auth";
 
 const navigation = [
-  { name: "Home", href: "/", current: false },
+  { name: "Home", href: "/home", current: false },
   { name: "Recepie", href: "/recepie", current: false },
   { name: "Category", href: "/category", current: false },
 ];
@@ -24,6 +26,17 @@ function classNames(...classes) {
 }
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
+  const { data: user } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => myProfile(),
+  });
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
   return (
     <div>
       <Disclosure as="nav" className="bg-orange-900 z-30">
@@ -76,7 +89,7 @@ const Navbar = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          src={`http://localhost:8000/${user?.image}`}
                           alt=""
                         />
                       </MenuButton>
@@ -101,15 +114,16 @@ const Navbar = () => {
 
                       <MenuItem>
                         {({ focus }) => (
-                          <a
-                            href="#"
+                          <Link
+                            to={"/login"}
+                            onClick={handleLogout}
                             className={classNames(
                               focus ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700"
                             )}
                           >
                             Sign out
-                          </a>
+                          </Link>
                         )}
                       </MenuItem>
                     </MenuItems>

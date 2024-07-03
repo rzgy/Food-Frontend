@@ -1,14 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { ReactComponent as Svg1 } from "../assets/1.svg";
 import userContext from "../context/userContext";
 import { register } from "../api/auth";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const [userInfo, setUserInfo] = useState({});
+
+  const navigate = useNavigate();
 
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
@@ -29,8 +32,9 @@ const Signup = () => {
     mutationKey: ["register"],
     mutationFn: () => register(userInfo),
     onSuccess: () => {
-      //   setUserInfo(true);
-      userInfo(true);
+      setUserInfo(true);
+      //userInfo(true);
+      navigate("/login");
     },
   });
 
