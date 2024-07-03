@@ -8,6 +8,10 @@ const checkToken = () => {
   return false;
 };
 
+const storeToken = (token) => {
+  localStorage.setItem("token", token);
+};
+
 const login = async (userInfo) => {
   const { data } = await instance.post("/users/signin", userInfo);
   storeToken(data.token);
@@ -35,19 +39,16 @@ const myProfile = async () => {
 
 const upDateProfile = async (userInfo) => {
   const token = localStorage.getItem("token");
+
   const formData = new FormData();
-  // for (const key in userInfo) formData.append(key, userInfo[key]);
-  formData.append("image", userInfo);
+  for (const key in userInfo) formData.append(key, userInfo[key]);
   const { data } = await instance.put("/users/myprofile", formData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+  console.log(data);
   return data;
-};
-
-const storeToken = (token) => {
-  localStorage.setItem("token", token);
 };
 
 export { checkToken, register, login, myProfile, upDateProfile, storeToken };
