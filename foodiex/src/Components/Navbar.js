@@ -1,161 +1,149 @@
-import React from "react";
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-
-import { ReactComponent as Svg2 } from "../assets/2.svg";
-import { useQuery } from "@tanstack/react-query";
-import { myProfile } from "../api/auth";
-
-const navigation = [
-  { name: "Home", href: "/home", current: false },
-  { name: "Recepie", href: "/recepie", current: false },
-  { name: "Category", href: "/category", current: false },
-];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import UserContext from "../context/UserContext";
+import { removeToken } from "../api/storage";
+import { fetchOneUser } from "../api/auth";
+import logo from "../Pics/pngwing.com.png";
 
 const Navbar = () => {
+  const [user, setUser] = useContext(UserContext);
+  const [profilePic, setProfilePic] = useState(null);
   const navigate = useNavigate();
 
-  const { data: user } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => myProfile(),
-  });
+  useEffect(() => {
+    if (user) {
+      const fetchUserProfile = async () => {
+        try {
+          const data = await fetchOneUser();
+          setProfilePic(`http://localhost:8000/${data?.image}`);
+        } catch (error) {
+          console.error("Failed to fetch user profile", error);
+        }
+      };
+
+      fetchUserProfile();
+    }
+  }, [user]);
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    removeToken();
+    setUser(false);
     navigate("/");
   };
 
   return (
-    <div>
-      <Disclosure as="nav" className="bg-orange-900 z-30">
-        {({ open }) => (
-          <>
-            <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-              <div className="relative flex h-16 items-center justify-between">
-                <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                  {/* Mobile menu button*/}
-                  <DisclosureButton className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                    <span className="absolute -inset-0.5" />
-                    <span className="sr-only">Open main menu</span>
-                    {open ? (
-                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </DisclosureButton>
-                </div>
-                <div className="flex flex-1 items-center justify-center sm:items-center sm:justify-start">
-                  <div className="flex flex-shrink-0 items-center  w-[50px]">
-                    <Svg2 className="w-[100px] h-full" />
-                  </div>
-                  <div className="hidden sm:ml-6 sm:block">
-                    <div className="flex space-x-4">
-                      {navigation.map((item) => (
-                        <NavLink
-                          key={item.name}
-                          to={item.href}
-                          className={classNames(
-                            item.current
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                            "rounded-md px-3 py-2 text-sm font-medium"
-                          )}
-                          aria-current={item.current ? "page" : undefined}
-                        >
-                          {item.name}
-                        </NavLink>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                  {/* Profile dropdown */}
-                  <Menu as="div" className="relative ml-3">
-                    <div>
-                      <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">Open user menu</span>
-                        <img
-                          className="h-8 w-8 rounded-full"
-                          src={`http://localhost:8000/${user?.image}`}
-                          alt=""
-                        />
-                      </MenuButton>
-                    </div>
-                    <MenuItems
-                      transition
-                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                    >
-                      <MenuItem>
-                        {({ focus }) => (
-                          <NavLink
-                            to={"/profile"}
-                            className={classNames(
-                              focus ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Your Profile
-                          </NavLink>
-                        )}
-                      </MenuItem>
-
-                      <MenuItem>
-                        {({ focus }) => (
-                          <Link
-                            to={"/login"}
-                            onClick={handleLogout}
-                            className={classNames(
-                              focus ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Sign out
-                          </Link>
-                        )}
-                      </MenuItem>
-                    </MenuItems>
-                  </Menu>
-                </div>
+    <nav className="bg-[#252526] text-white shadow-md py-4 mb-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          <div className="flex items-center">
+            <Link to="/">
+              <img src={logo} alt="Logo" className="h-16 w-auto" />
+            </Link>
+            <Link to="/" className="ml-4 text-white text-3xl font-serif">
+              Foodex
+            </Link>
+          </div>
+          {user && (
+            <div className="flex-grow flex justify-center">
+              <div className="flex items-baseline space-x-4">
+                <NavLink
+                  to="/main"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-white bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                      : "text-white hover:bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                  }
+                >
+                  Main
+                </NavLink>
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-white bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                      : "text-white hover:bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                  }
+                >
+                  Profile
+                </NavLink>
+                <NavLink
+                  to="/categories"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-white bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                      : "text-white hover:bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                  }
+                >
+                  Categories
+                </NavLink>
+                <NavLink
+                  to="/recipes"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-white bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                      : "text-white hover:bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                  }
+                >
+                  Recipes
+                </NavLink>
+                <NavLink
+                  to="/chefs"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-white bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                      : "text-white hover:bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                  }
+                >
+                  All Chefs
+                </NavLink>
               </div>
             </div>
-
-            <DisclosurePanel className="sm:hidden">
-              <div className="space-y-1 px-2 pb-3 pt-2">
-                {navigation.map((item) => (
-                  <DisclosureButton
-                    key={item.name}
-                    as="a"
-                    href={item.href}
-                    className={classNames(
-                      item.current
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                      "block rounded-md px-3 py-2 text-base font-medium"
-                    )}
-                    aria-current={item.current ? "page" : undefined}
-                  >
-                    {item.name}
-                  </DisclosureButton>
-                ))}
-              </div>
-            </DisclosurePanel>
-          </>
-        )}
-      </Disclosure>
-    </div>
+          )}
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                {profilePic && (
+                  <img
+                    src={profilePic}
+                    alt="Profile"
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="bg-orange-500 text-white px-3 py-2 rounded-md text-lg font-medium hover:bg-orange-600"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-white bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                      : "text-white hover:bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                  }
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-white bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                      : "text-white hover:bg-orange-500 px-3 py-2 rounded-md text-lg font-medium"
+                  }
+                >
+                  Register
+                </NavLink>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 };
 
