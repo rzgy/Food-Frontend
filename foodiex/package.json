@@ -1,20 +1,23 @@
 {
-  "name": "foodiex",
+  "name": "foodiez",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@headlessui/react": "^2.1.1",
-    "@heroicons/react": "^2.1.4",
-    "@tanstack/react-query": "^5.49.2",
+    "@tanstack/react-query": "^5.45.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.2",
-    "heroicons": "^2.1.4",
+    "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.24.0",
+    "react-modal": "^3.16.1",
+    "react-multi-select-component": "^4.3.4",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
+    "react-toastify": "^10.0.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -42,6 +45,8 @@
     ]
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4"
   }
 }
